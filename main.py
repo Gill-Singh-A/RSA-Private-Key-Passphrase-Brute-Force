@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+from modified_paramiko_pkey import KeyDecrpter
+
 from datetime import date
 from optparse import OptionParser
 from colorama import Fore, Back, Style
@@ -23,6 +25,17 @@ def get_arguments(*args):
     for arg in args:
         parser.add_option(arg[0], arg[1], dest=arg[2], help=arg[3])
     return parser.parse_args()[0]
+
+def crackKeys(words, keys):
+    cracked = []
+    for word in words:
+        for key_name, key_lines in keys.items():
+            try:
+                KeyDecrpter(lines=key_lines, password=word)
+                cracked.append(key_name)
+            except:
+                pass
+    return cracked
 
 if __name__ == "__main__":
     data = get_arguments(('-l', "--load", "load", "List of Wordlists (seperated by ',')"),
