@@ -72,7 +72,7 @@ if __name__ == "__main__":
     else:
         data.number_of_words = int(data.number_of_words)
     if not data.write:
-        data.write = f"{date.today()} {strftime('%H_%M_%S', localtime())}"
+        data.write = f"{date.today()} {strftime('%H_%M_%S', localtime())}.csv"
     keys, cracked_keys = {}, []
     display(':', f"Loading {Back.MAGENTA}{len(data.key)}{Back.RESET} Keys...")
     for key_name in data.key:
@@ -164,3 +164,8 @@ if __name__ == "__main__":
     display(':', f"Total Keys Loaded = {Back.MAGENTA}{total_keys}{Back.RESET}", start='\n')
     display(':', f"Total Keys Cracked = {Back.MAGENTA}{len(cracked_keys)}{Back.RESET}")
     display(':', f"Success Rate = {Back.MAGENTA}{len(cracked_keys)/total_keys*100:.2f}%{Back.RESET}")
+    display(':', f"Dumping Cracked Keys and Passwords to File {Back.MAGENTA}{data.write}{Back.RESET}", start='\n')
+    with open(data.write, 'w') as file:
+        file.write(f"Key Path,Password\n")
+        file.write('\n'.join([f"{key_path},{password}" for key_path, password in cracked_keys]))
+    display('+', f"Dumped Cracked Keys and Passwords to File {Back.MAGENTA}{data.write}{Back.RESET}")
