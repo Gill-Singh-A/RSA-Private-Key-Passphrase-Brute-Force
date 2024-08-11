@@ -5,6 +5,7 @@ from modified_paramiko_pkey import KeyDecrpter
 from datetime import date
 from optparse import OptionParser
 from colorama import Fore, Back, Style
+from multiprocessing import Pool, Lock, cpu_count
 from time import strftime, localtime
 
 status_color = {
@@ -14,6 +15,9 @@ status_color = {
     ':': Fore.CYAN,
     ' ': Fore.WHITE
 }
+
+lock = Lock()
+thread_count = cpu_count()
 
 number_of_words = 100000000
 
@@ -36,6 +40,19 @@ def crackKeys(words, keys):
             except:
                 pass
     return cracked
+def crackKeysHandler(words, keys):
+    cracked_keys = []
+    threads = []
+    pool = Pool(thread_count)
+    word_count = len(words)
+    word_divisions = [words[group*word_count//thread_count: (group+1)*word_count//thread_count] for group in range(thread_count)]
+    for word_division in word_divisions:
+        threads.append(pool.apply_async(crackKeys, (word_division, keys)))
+    for thread in threads:
+        cracked_keys.extend(thread.get())
+    pool.close()
+    pool.join()
+    return cracked_keys
 
 if __name__ == "__main__":
     data = get_arguments(('-l', "--load", "load", "List of Wordlists (seperated by ',')"),
